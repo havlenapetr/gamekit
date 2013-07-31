@@ -284,7 +284,7 @@ void gkBlenderSceneConverter::convertGroupInstances()
 	{
 		gkGroupManager* mgr = gkGroupManager::getSingletonPtr();
 
-		utArray<Blender::Object*> groups, armatureLinker;
+                utArray<Blender::Object*> groups;
 		for (Blender::Base* base = (Blender::Base*)m_bscene->base.first; base; base = base->next)
 		{
 			if (!base->object)
@@ -990,7 +990,7 @@ void gkBlenderSceneConverter::convert(bool createGroupInstances)
 
 		if (bobj->type == OB_MESH && bobj->parent != 0 && bobj->parent->type == OB_ARMATURE)
 			armatureLinker.push_back(bobj);
-
+#if 0
 		if (bobj->parent) {
 			short parentType = bobj->parent->type;
 			short parentParType = bobj->parent->partype;
@@ -998,6 +998,7 @@ void gkBlenderSceneConverter::convert(bool createGroupInstances)
 		short parType = bobj->partype;
 
 		int i=0;
+#endif
 	}
 
 	// build group instances

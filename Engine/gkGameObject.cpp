@@ -504,7 +504,7 @@ void gkGameObject::applyTransformState(const gkTransformState& newstate, const g
 		m_node->setPosition(state.loc);
 		m_node->setOrientation(state.rot);
 		m_node->setScale(state.scl);
-	//	m_node->needUpdate(true);
+                m_node->needUpdate(true);
 
 		if (m_rigidBody)
 		{
@@ -661,28 +661,26 @@ void gkGameObject::rotate(const gkEuler& drot, int tspace)
 
 void gkGameObject::rotate(const gkQuaternion& dq, int tspace)
 {
-	if (isImmovable())
+        if (!m_node || isImmovable())
 		return;
 
-	if (m_node != 0)
-	{
-		m_node->rotate(dq, (Ogre::Node::TransformSpace)tspace);
-		notifyUpdate();
+        m_node->rotate(dq, (Ogre::Node::TransformSpace)tspace);
 
-		// update the rigid body state
-		if (m_rigidBody != 0)
-		{
-			m_rigidBody->updateTransform();
-		}
-		else if (m_character)
-		{
-			m_character->updateTransform();
-		}
-		else if (m_ghost)
-		{
-			m_ghost->updateTransform();
-		}
-	}
+        // update the rigid body state
+        if (m_rigidBody)
+        {
+            m_rigidBody->updateTransform();
+        }
+        else if (m_character)
+        {
+            m_character->updateTransform();
+        }
+        else if (m_ghost)
+        {
+            m_ghost->updateTransform();
+        }
+
+        notifyUpdate();
 }
 
 
@@ -1059,6 +1057,9 @@ void gkGameObject::addChild(gkGameObject* gobj)
 
 	if (gobj && gobj != this)
 	{
+                Ogre::SceneNode* node = gobj->getNode();
+
+                GK_ASSERT(node && "Unable to obtain scene node");
 		GK_ASSERT(!gobj->m_parent && "Already has a parent");
 		GK_ASSERT(!hasChild(gobj)  && "Already has this child");
 
@@ -1071,13 +1072,20 @@ void gkGameObject::addChild(gkGameObject* gobj)
 		// Suspend child updates.
 		gkPhysicsController* cont = gobj->getPhysicsController();
 		if (cont)
+                {
 			cont->suspend(true);
+                }
+                else
+                {
+                        // if we haven't physics, don't inherit orientation
+                        node->setInheritOrientation(false);
+                }
 
-		Ogre::SceneNode* node = gobj->getNode();
-		if (node->getParentSceneNode())
-			node->getParentSceneNode()->removeChild(node);
+                Ogre::SceneNode* parentNode = node->getParentSceneNode();
+                if (parentNode)
+                        parentNode->removeChild(node);
 
-		m_node->addChild(gobj->getNode());
+                m_node->addChild(node);
 	}
 }
 
