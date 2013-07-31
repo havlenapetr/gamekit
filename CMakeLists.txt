@@ -41,7 +41,7 @@ include(ConfigGameKit)
 include(ConfigIPhone)
 include(OgreAddTargets)
 
-configure_gamekit(${OGREKIT_SOURCE_DIR}/Dependencies/Source)
+configure_gamekit(${OGREKIT_SOURCE_DIR}/Dependencies)
 
 set(GAMEKIT_GRAPHIC_BACKEND 1 CACHE STRING 
 	"Select the graphic backend for GameKit. Possible values:
@@ -75,7 +75,9 @@ message(STATUS "----------------------------------------------------------------
 
 configure_ogrekit(${OGREKIT_SOURCE_DIR} ${OGREKIT_SOURCE_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR} ${GAMEKIT_GRAPHIC_BACKEND})
 
-set(OGREKIT_BULLET_LIBS BulletDynamics BulletCollision LinearMath)	
+subdirs(bullet)
+
+set(OGREKIT_BULLET_LIBS BulletDynamics BulletCollision LinearMath)
 set(OGREKIT_BULLET_INCLUDE ${OGREKIT_SOURCE_DIR}/bullet/src)
 if (OGREKIT_COMPILE_SOFTBODY)
 	list(APPEND OGREKIT_BULLET_LIBS BulletSoftBody)
@@ -135,7 +137,6 @@ set(OGREKIT_LIB OgreKitCore ${OGREKIT_OGRE_LIBS})
 
 # ---------------------------------------------------------
 # Configure Dependencies
-subdirs(bullet)
 
 if (OGREKIT_BUILD_ANDROID)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOGREKIT_BUILD_ANDROID")

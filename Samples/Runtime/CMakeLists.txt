@@ -20,7 +20,7 @@ set(SRC
 
 include_directories(
 	${OGREKIT_INCLUDE}
-	../../Dependencies/Source/tclap/include
+	${OGREKIT_DEP_DIR}/tclap/include
 )
 
 link_libraries(

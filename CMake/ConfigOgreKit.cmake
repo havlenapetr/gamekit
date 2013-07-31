@@ -117,11 +117,10 @@ macro (configure_ogrekit ROOT OGREPATH OGRE_BACKEND)
 	set(OGREKIT_OIS_TARGET OIS)
 	set(OGREKIT_TINYXML_TARGET TinyXml)
 	
-	set(OGREKIT_DEP_DIR ${ROOT}/Dependencies/Source)
-	set(OGREKIT_DEP_WIN_DIR ${ROOT}/Dependencies/Win32)
+	set(OGREKIT_DEP_DIR ${ROOT}/Dependencies)
 	set(OGRE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/Bin)
 	set(OGRE_TEMPLATES_DIR ${ROOT}/CMake/Templates)
-	set(OGRELITE_SOURCE_DIR ${OGREPATH})	
+	set(OGRELITE_SOURCE_DIR ${OGREPATH})
 	set(OGREKIT_SAMPLES_DIR ${ROOT}/Samples)
 	set(OGREKIT_ANDROID_DEP_DIR ${ROOT}/Dependencies/Android)
 	
