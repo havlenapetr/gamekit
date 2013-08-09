@@ -66,6 +66,7 @@ protected:
 
 	Ogre::RaySceneQuery* m_rayQuery;
 	bool rayTest(void);
+        bool rayIntersects();
 
 public:
 	gkMouseSensor(gkGameObject* object, gkLogicLink* link, const gkString& name);

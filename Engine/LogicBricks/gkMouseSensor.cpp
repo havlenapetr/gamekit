@@ -84,33 +84,62 @@ bool gkMouseSensor::query(void)
 	gkMouse* mse = gkWindowSystem::getSingleton().getMouse();
 	switch (m_type)
 	{
-	case MOUSE_LEFT:
-		return mse->isButtonDown(gkMouse::Left);
+        case MOUSE_LEFT:
+                return mse->isButtonDown(gkMouse::Left) && rayIntersects();
 	case MOUSE_MIDDLE:
-		return mse->isButtonDown(gkMouse::Middle);
+                return mse->isButtonDown(gkMouse::Middle) && rayIntersects();
 	case MOUSE_RIGHT:
-		return mse->isButtonDown(gkMouse::Right);
+                return mse->isButtonDown(gkMouse::Right) && rayIntersects();
 	case MOUSE_MOTION:
-		return mse->moved;
+                return mse->moved && rayIntersects();
 	case MOUSE_WHEEL_UP:
-		return mse->wheelDelta > 0;
+                return mse->wheelDelta > 0 && rayIntersects();
 	case MOUSE_WHEEL_DOWN:
-		return mse->wheelDelta < 0;
+                return mse->wheelDelta < 0 && rayIntersects();
 	case MOUSE_MOUSE_OVER:
 	case MOUSE_MOUSE_OVER_ANY:
 
 #if GK_PLATFORM == GK_PLATFORM_ANDROID || GK_PLATFORM == GK_PLATFORM_APPLE_IOS
-	// the ray-cast make on a mobile device only sense when the device is touched.
-	// this should work as long as the mouse-touch is mapped to left-click
-	if (!mse->isButtonDown(gkMouse::Left))
-		return false;
+                // the ray-cast make on a mobile device only sense when the device is touched.
+                // this should work as long as the mouse-touch is mapped to left-click
+                if (!mse->isButtonDown(gkMouse::Left))
+                        return false;
 #endif
+                if(!rayIntersects())
+                        return false;
 		// use Ogre viewport to ray query. Since moveable objects might move under the
 		// mouse the raytest have to be done every tick.
 		m_lastResult = rayTest();
 		return m_lastResult;
 	}
 	return false;
+}
+
+/**
+ * Checks if mouse position intersects with scene node on which
+ * this logic brick is attached
+ */
+bool gkMouseSensor::rayIntersects()
+{
+    GK_ASSERT(m_object);
+
+    gkCamera* cam = m_object->getOwner()->getMainCamera();
+    Ogre::Camera* oc = cam->getCamera();
+
+    gkMouse* mse = gkWindowSystem::getSingleton().getMouse();
+
+    gkScalar ncx = mse->position.x / mse->winsize.x;
+    gkScalar ncy = mse->position.y / mse->winsize.y;
+
+    Ogre::Ray dest;
+    oc->getCameraToViewportRay(ncx, ncy, &dest);
+
+    // check if the ray intersects our game entity
+    Ogre::MovableObject* obj = m_object->getMovable();
+    if(obj) {
+        return dest.intersects(obj->getWorldBoundingBox()).first;
+    }
+    return false;
 }
 
 
@@ -134,12 +163,12 @@ bool gkMouseSensor::rayTest(void)
 	Ogre::Ray dest;
 	oc->getCameraToViewportRay(ncx, ncy, &dest);
 
-	if (m_rayQuery == 0)
+        if (m_rayQuery == 0)
 	{
 		Ogre::SceneManager* mgr = m_object->getOwner()->getManager();
 		m_rayQuery = mgr->createRayQuery(dest);
 	}
-	else m_rayQuery->setRay(dest);
+        else m_rayQuery->setRay(dest);
 
 
 	// do the test
