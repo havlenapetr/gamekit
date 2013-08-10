@@ -138,8 +138,6 @@ link_libraries(
 	${OGREKIT_TINYXML_TARGET}
 )
 
-setup_wx()
-
 
 set(HiddenCMakeLists ../CMakeLists.txt)
 source_group(ParentCMakeLists FILES ${HiddenCMakeLists})

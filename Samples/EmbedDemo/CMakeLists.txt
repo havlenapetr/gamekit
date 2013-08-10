@@ -49,8 +49,6 @@ link_libraries(
 	${OGREKIT_LIB}
 )
 
-setup_wx()
-
 set(HiddenCMakeLists ../CMakeLists.txt)
 source_group(ParentCMakeLists FILES ${HiddenCMakeLists})
 

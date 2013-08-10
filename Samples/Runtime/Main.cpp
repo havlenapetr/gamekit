@@ -156,7 +156,6 @@ int OgreKit::setup(int argc, char** argv)
 
 		m_prefs.rendersystem			= gkUserDefs::getOgreRenderSystem(rendersystem_arg.getValue());
 		m_prefs.viewportOrientation		= viewportOrientation_arg.getValue();
-		//m_prefs.sceneManager			= sceneManager_arg.getValue();
 		m_prefs.log						= log_arg.getValue();
 		m_prefs.verbose					= verbose_arg.getValue();
 
@@ -168,7 +167,7 @@ int OgreKit::setup(int argc, char** argv)
 		m_prefs.resources				= resources_arg.getValue();
 		m_prefs.blendermat				= blendermat_arg.getValue();
 		m_prefs.matblending				= matblending_arg.getValue();
-		m_prefs.grabInput				= grapInput_arg.getValue();
+        m_prefs.grabInput				= false/*grapInput_arg.getValue()*/;
 		m_prefs.debugFps				= debugFps_arg.getValue();
 		m_prefs.debugPhysics			= debugPhysics_arg.getValue();
 		m_prefs.debugPhysicsAabb		= debugPhysicsAabb_arg.getValue();

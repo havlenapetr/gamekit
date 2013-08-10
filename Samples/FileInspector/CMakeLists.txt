@@ -38,7 +38,6 @@ link_libraries(fbtFile bfBlend btBulletFile)
 
 
 set(ALL ${INSP_SRC} ${INSP_HDR} ${INSP_API} ${fbtInspector} ${PLAT_RESOURCE})
-setup_wx()
 
 
 if (WIN32)

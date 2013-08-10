@@ -950,40 +950,6 @@ else()
 	source_group(Graphics\\Source FILES ${Graphics_SOURCE})
 endif()
 
-# ---------------------------------------------------------
-# GUI Files
-# ---------------------------------------------------------
-set(GUI_SOURCE
-	# ----- Source -----
-	GUI/rocket/RenderInterfaceOgre3D.cpp
-	GUI/rocket/RocketRenderListener.cpp
-	GUI/rocket/RocketEventListener.cpp
-	GUI/rocket/SystemInterfaceOgre3D.cpp
-	GUI/rocket/FileInterfaceOgre3D.cpp
-	GUI/gkGUIManager.cpp
-	GUI/gkGUI.cpp
-)
-
-set(GUI_HEADER
-	# ----- Header -----
-	GUI/rocket/RenderInterfaceOgre3D.h
-	GUI/rocket/RocketRenderListener.h
-	GUI/rocket/RocketEventListener.h
-	GUI/rocket/SystemInterfaceOgre3D.h
-	GUI/rocket/FileInterfaceOgre3D.h
-	GUI/gkGUIManager.h
-	GUI/gkGUI.h
-)
-
-if(APPLE)
-	source_group(GUI FILES ${GUI_HEADER} ${GUI_SOURCE})
-else()
-	source_group(GUI\\Header FILES ${GUI_HEADER})
-	source_group(GUI\\Source FILES ${GUI_SOURCE})
-endif()
-
-
-
 
 # ---------------------------------------------------------
 # External Engine Files
@@ -1157,14 +1123,6 @@ if (OGREKIT_COMPILE_ENET)
 	list(APPEND Extra_SOURCE ${Network_SOURCE}    ${Network_HEADER})
 	link_libraries(${OGREKIT_ENET_LIB})
 
-	add_definitions(-DSTATIC_LIB)
-endif()
-
-if (OGREKIT_COMPILE_LIBROCKET)
-	list(APPEND Extra_SOURCE ${GUI_SOURCE} ${GUI_HEADER})
-	link_libraries(${OGREKIT_LIBROCKET_LIBS})
-
-	#need for libRocket link
 	add_definitions(-DSTATIC_LIB)
 endif()
 

@@ -62,7 +62,7 @@ void MacMouse::_initialize()
 	mMouseWarped = false;
 	
 	// Hide OS Mouse
- 	CGDisplayHideCursor(kCGDirectMainDisplay);
+    CGDisplayHideCursor(kCGDirectMainDisplay);
 
 	MacInputManager* im = static_cast<MacInputManager*>(mCreator);
 	WindowRef win = im->_getWindow();
@@ -91,15 +91,15 @@ void MacMouse::_initialize()
 
 	mouseEventRef = mWindowFocusHandler = NULL;
 
-	if(InstallEventHandler(event, mouseUPP, GetEventTypeCount(mouseEvents), mouseEvents, this, &mouseEventRef) != noErr)
-		OIS_EXCEPT( E_General, "MacMouse::_initialize >> Error loading Mouse event handler" );
+    if(InstallEventHandler(event, mouseUPP, GetEventTypeCount(mouseEvents), mouseEvents, this, &mouseEventRef) != noErr)
+        OIS_EXCEPT( E_General, "MacMouse::_initialize >> Error loading Mouse event handler" );
 
-	if(InstallEventHandler(event, mWindowFocusListener, GetEventTypeCount(WinFocusAcquired), WinFocusAcquired, this, &mWindowFocusHandler) != noErr)
-		OIS_EXCEPT( E_General, "MacMouse::_initialize >> Error loading Mouse event handler" );		
+    if(InstallEventHandler(event, mWindowFocusListener, GetEventTypeCount(WinFocusAcquired), WinFocusAcquired, this, &mWindowFocusHandler) != noErr)
+        OIS_EXCEPT( E_General, "MacMouse::_initialize >> Error loading Mouse event handler" );
 
 	//Lock OS Mouse movement
 	mNeedsToRegainFocus = false;
-	CGAssociateMouseAndMouseCursorPosition(FALSE);
+    CGAssociateMouseAndMouseCursorPosition(FALSE);
 }
 
 OSStatus MacMouse::WindowFocusChanged(EventHandlerCallRef nextHandler, EventRef event, void* macMouse)

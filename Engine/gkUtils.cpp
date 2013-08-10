@@ -47,7 +47,11 @@ bool gkUtils::IS_LUA_PACKAGE = false;
 
 
 #ifdef __APPLE__
+
+#ifndef MAXPATHLEN
 #define MAXPATHLEN 512
+#endif
+
 char* AppleGetBundleDirectory(void)
 {
 	CFURLRef bundleURL;

@@ -36,7 +36,10 @@ THE SOFTWARE.
 #import "OgreGLRenderSystem.h"
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSOpenGLView.h>
+#import <AppKit/NSApplication.h>
 #import <QuartzCore/CVDisplayLink.h>
+
+#define OGRE_NO_LIBCPP_SUPPORT 1
 
 @implementation OgreWindow
 

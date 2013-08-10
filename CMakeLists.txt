@@ -83,12 +83,6 @@ if (OGREKIT_COMPILE_SOFTBODY)
 	list(APPEND OGREKIT_BULLET_LIBS BulletSoftBody)
 endif()
 
-if (NOT APPLE AND OGREKIT_COMPILE_WXWIDGETS)
-	include(wxSetup)
-	configure_wx_build(${OGREKIT_SOURCE_DIR})
-	setup_wx()
-endif()
-
 
 #if (APPLE)
 #    if (${XCODE_VERSION} STRGREATER "4.0.0")
@@ -198,13 +192,8 @@ if(NOT OGREKIT_ONLY_DEPENDENCIES)
 	if (NOT OGREKIT_USE_BPARSE OR OGREKIT_USE_FILETOOLS)
 		subdirs(${OGREKIT_SOURCE_DIR}/Tools/FileTools)
 	endif()
-
-	if (OGREKIT_COMPILE_WXWIDGETS)
-		subdirs(${OGREKIT_SOURCE_DIR}/${WX_VERSION})
-	endif()
 	
 	subdirs(Samples)
-
 
 	if (OGREKIT_UPDATE_CPP_DOCS)
 		subdirs(Docs/CppAPI)

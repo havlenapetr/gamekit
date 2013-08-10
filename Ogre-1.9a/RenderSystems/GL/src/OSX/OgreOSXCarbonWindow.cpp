@@ -34,6 +34,8 @@ THE SOFTWARE.
 #include "OgreGLRenderSystem.h"
 #include "OgreWindowEventUtilities.h"
 
+#define OGRE_NO_LIBCPP_SUPPORT 1
+
 namespace Ogre
 {
 

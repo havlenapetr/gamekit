@@ -85,7 +85,6 @@ set(ALL
 
 include_directories(. ${GAMEKIT_UTILS_PATH})
 link_libraries(${GAMEKIT_UTILS_TARGET})
-setup_wx()
 
 if (WIN32)
 	add_executable(AppNodeEditor WIN32 ${ALL})
