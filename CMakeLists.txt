@@ -75,10 +75,10 @@ message(STATUS "----------------------------------------------------------------
 
 configure_ogrekit(${OGREKIT_SOURCE_DIR} ${OGREKIT_SOURCE_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR} ${GAMEKIT_GRAPHIC_BACKEND})
 
-subdirs(bullet)
+subdirs(Dependencies/bullet)
 
 set(OGREKIT_BULLET_LIBS BulletDynamics BulletCollision LinearMath)
-set(OGREKIT_BULLET_INCLUDE ${OGREKIT_SOURCE_DIR}/bullet/src)
+set(OGREKIT_BULLET_INCLUDE ${OGREKIT_SOURCE_DIR}/Dependencies/bullet/src)
 if (OGREKIT_COMPILE_SOFTBODY)
 	list(APPEND OGREKIT_BULLET_LIBS BulletSoftBody)
 endif()
