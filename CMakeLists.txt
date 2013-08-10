@@ -43,36 +43,7 @@ include(OgreAddTargets)
 
 configure_gamekit(${OGREKIT_SOURCE_DIR}/Dependencies)
 
-set(GAMEKIT_GRAPHIC_BACKEND 1 CACHE STRING 
-	"Select the graphic backend for GameKit. Possible values:
-		 1 - Ogre 1.9a
-		 2 - Ogre 1.8rc
-		 3 - Ogre 1.9-mercurial
-	")
-
-# Named constants for the available backends
-set(GAMEKIT_GRAPHIC_BACKEND_19 		  		1)
-set(GAMEKIT_GRAPHIC_BACKEND_18 				2)
-set(GAMEKIT_GRAPHIC_BACKEND_19_mercurial 	3)
-
-
-if (GAMEKIT_GRAPHIC_BACKEND EQUAL GAMEKIT_GRAPHIC_BACKEND_19)
-	set(GAMEKIT_GRAPHIC_BACKEND_DIR Ogre-1.9a)
-elseif (GAMEKIT_GRAPHIC_BACKEND EQUAL GAMEKIT_GRAPHIC_BACKEND_18)	
-	set(GAMEKIT_GRAPHIC_BACKEND_DIR Ogre-1.8rc)
-	add_definitions(-DBUILD_OGRE18)
-elseif (GAMEKIT_GRAPHIC_BACKEND EQUAL GAMEKIT_GRAPHIC_BACKEND_19_mercurial)
-	set(GAMEKIT_GRAPHIC_BACKEND_DIR Ogre-1.9-mercurial)
-	set(OGREKIT_CREATE_OGRE_DEPENDENCY_DIR 1)
-else()
-	message(FATAL_ERROR "Invalid graphics backend or not supported yet.")
-endif()
-
-
-message(STATUS "-----------------------------------------------------------------------------")
-message(STATUS "-- Graphic backend is " ${GAMEKIT_GRAPHIC_BACKEND_DIR})
-message(STATUS "-----------------------------------------------------------------------------")
-
+set(GAMEKIT_GRAPHIC_BACKEND_DIR Ogre-1.9a)
 configure_ogrekit(${OGREKIT_SOURCE_DIR} ${OGREKIT_SOURCE_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR} ${GAMEKIT_GRAPHIC_BACKEND})
 
 subdirs(Dependencies/bullet)
