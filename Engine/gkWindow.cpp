@@ -328,6 +328,7 @@ gkViewport* gkWindow::addViewport(gkCamera* cam, int zorder)
 {	
 	if (m_rwindow)
 	{
+		m_rwindow->removeViewport(zorder);
 		Ogre::Viewport* vp =  m_rwindow->addViewport(cam->getCamera(), zorder); GK_ASSERT(vp);
 
 		gkViewport* viewport = new gkViewport(this, vp);
