@@ -1057,9 +1057,9 @@ void gkGameObject::addChild(gkGameObject* gobj)
 
 	if (gobj && gobj != this)
 	{
-                Ogre::SceneNode* node = gobj->getNode();
+		Ogre::SceneNode* node = gobj->getNode();
 
-                GK_ASSERT(node && "Unable to obtain scene node");
+		GK_ASSERT(node && "Unable to obtain scene node");
 		GK_ASSERT(!gobj->m_parent && "Already has a parent");
 		GK_ASSERT(!hasChild(gobj)  && "Already has this child");
 
@@ -1069,23 +1069,23 @@ void gkGameObject::addChild(gkGameObject* gobj)
 		if (!gobj->isInstanced())
 			gobj->createInstance();
 
-		// Suspend child updates.
 		gkPhysicsController* cont = gobj->getPhysicsController();
 		if (cont)
-                {
+		{
+			// Suspend child updates.
 			cont->suspend(true);
-                }
-                else
-                {
-                        // if we haven't physics, don't inherit orientation
-                        node->setInheritOrientation(false);
-                }
+		}
+		else if(static_cast<gkCamera *>(gobj))
+		{
+			// if we haven't physics, don't inherit orientation
+			node->setInheritOrientation(false);
+		}
 
-                Ogre::SceneNode* parentNode = node->getParentSceneNode();
-                if (parentNode)
-                        parentNode->removeChild(node);
+		Ogre::SceneNode* parentNode = node->getParentSceneNode();
+		if (parentNode)
+			parentNode->removeChild(node);
 
-                m_node->addChild(node);
+		m_node->addChild(node);
 	}
 }
 
