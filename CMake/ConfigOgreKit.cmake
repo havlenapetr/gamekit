@@ -1,4 +1,4 @@
-macro (configure_ogrekit ROOT OGREPATH OGRE_BACKEND)
+macro (configure_ogrekit ROOT OGREPATH)
 	#message(STATUS ${OGREPATH})
 	set(GNUSTEP_SYSTEM_ROOT $ENV{GNUSTEP_SYSTEM_ROOT})
 	
@@ -550,13 +550,10 @@ macro (configure_ogrekit ROOT OGREPATH OGRE_BACKEND)
 	
 
 	set(OGREKIT_OGRE_LIBS 
-		OgreMain       
-	)    
-	
-	# ogre 1.8rc-compatability
-	if (NOT ${OGRE_BACKEND} EQUAL 2)
-		list(APPEND OGREKIT_OGRE_LIBS OgreOverlay)  
-	endif()
+		OgreMain
+	)
+
+	list(APPEND OGREKIT_OGRE_LIBS OgreOverlay)
 
 	list(APPEND OGREKIT_OGRE_LIBS 	${OGREKIT_FREEIMAGE_TARGET} 
 		${OGREKIT_FREETYPE_TARGET}

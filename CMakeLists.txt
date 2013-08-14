@@ -43,8 +43,8 @@ include(OgreAddTargets)
 
 configure_gamekit(${OGREKIT_SOURCE_DIR}/Dependencies)
 
-set(GAMEKIT_GRAPHIC_BACKEND_DIR Ogre-1.9a)
-configure_ogrekit(${OGREKIT_SOURCE_DIR} ${OGREKIT_SOURCE_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR} ${GAMEKIT_GRAPHIC_BACKEND})
+set(GAMEKIT_GRAPHIC_BACKEND_DIR Dependencies/Ogre-1.9a)
+configure_ogrekit(${OGREKIT_SOURCE_DIR} ${OGREKIT_SOURCE_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR})
 
 subdirs(Dependencies/bullet)
 

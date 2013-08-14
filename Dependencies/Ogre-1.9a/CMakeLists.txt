@@ -13,12 +13,11 @@ project(OgreLite)
 include(PrecompiledHeader)
 
 set(OgreLite 1.0)
-set (OGRE_CONFIG_HEADER 1)
-set (OGRE_SDK_BUILD 1)
+set(OGRE_CONFIG_HEADER 1)
+set(OGRE_SDK_BUILD 1)
 set(OGRE_THREAD_PROVIDER  0)
 set(OGRE_LIB_TYPE         STATIC)
 #set(OGRE_LIB_TYPE         SHARED)
-#set(OGRE_STATIC	FALSE)
 SET(OGRE_BINARY_DIR       ${OGREKIT_BINARY_DIR})
 SET(OGRE_SOURCE_DIR       ${OgreLite_SOURCE_DIR})
 set(OGRE_BUILD_COMPONENT_OVERLAY TRUE)
@@ -175,7 +174,6 @@ configure_file(${OGRE_TEMPLATES_DIR}/OgreBuildSettings.h.in ${OGREKIT_BINARY_DIR
 
 # Configure version file for use by scripts
 #configure_file("${OGRE_TEMPLATES_DIR}/version.txt.in" "${OGRE_BINARY_DIR}/version.txt" @ONLY)
-
 
 include_directories(${OGRELITE_SOURCE_DIR}/OgreMain/include)
 include_directories(${OGREKIT_BINARY_DIR}/include)

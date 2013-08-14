@@ -1077,7 +1077,7 @@ void gkGameObject::addChild(gkGameObject* gobj)
 		}
 		else if(static_cast<gkCamera *>(gobj))
 		{
-			// if we haven't physics, don't inherit orientation
+			// if we haven't physics, don't inherit orientation for cameras
 			node->setInheritOrientation(false);
 		}
 
