@@ -52,12 +52,14 @@ gkLogicBrick* gkDelaySensor::clone(gkLogicLink* link, gkGameObject* dest)
 bool gkDelaySensor::query(void)
 {
 	m_count += 1;
+	if (m_count < m_delay)
+	{
+		return false;
+	}
 	if (m_count > m_delay + m_duration)
+	{
 		if (m_repeat) m_count = 0;
-		else return false;
-	if (m_count <= m_delay)
 		return false;
-	if (m_duration == 0)
-		return false;
+	}
 	return true;
 }
