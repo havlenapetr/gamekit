@@ -132,10 +132,10 @@ if(NOT OGREKIT_ONLY_DEPENDENCIES)
 			endif()
 		endif()
 
-		if(OGREKIT_BUILD_ANDROID)
-			# Ogre samples search some libs in another subdir...
-			file(COPY ${OGREKIT_BINARY_DIR}/systemlibs DESTINATION ${OGREKIT_BINARY_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR})
-		endif()
+#		if(OGREKIT_BUILD_ANDROID)
+#			# Ogre samples search some libs in another subdir...
+#			file(COPY ${OGREKIT_BINARY_DIR}/systemlibs DESTINATION ${OGREKIT_BINARY_DIR}/${GAMEKIT_GRAPHIC_BACKEND_DIR})
+#		endif()
 		
 		# Configure Ogre build
 		add_subdirectory(${GAMEKIT_GRAPHIC_BACKEND_DIR})
