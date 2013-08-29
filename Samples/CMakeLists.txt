@@ -15,11 +15,7 @@ endif()
 
 
 if (SAMPLES_RUNTIME)
-    if (NOT OGREKIT_BUILD_ANDROID)
 	subdirs(Runtime)
-    else()
-	message(STATUS "**** android runtime: not yet :D")
-    endif()
 endif()
 
 if (SAMPLES_LOGICDEMO)

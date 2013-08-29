@@ -1,8 +1,6 @@
 # ---------------------------------------------------------
 cmake_minimum_required(VERSION 2.6)
 
-
-
 if (APPLE)
 	include_directories(${OGRELITE_SOURCE_DIR}/OgreMain/include/OSX)
 	SET(EXETYPE MACOSX_BUNDLE)
@@ -11,22 +9,36 @@ if (APPLE)
 	SET (NibFile MainMenu.nib)
 endif()
 
-set(SRC 
-	momo_ogre.blend
-	Main.cpp
-)
-
-
+if (OGREKIT_BUILD_ANDROID)
+	include_directories(
+		${ANDROID_NDK}/sources/android/native_app_glue
+	)
+	set(SRC 
+		${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
+		${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c
+		android.cpp
+	)
+	link_libraries(
+		android
+		log
+	)
+else()
+	include_directories(
+		${OGREKIT_DEP_DIR}/tclap/include
+	)
+	set(SRC 
+		momo_ogre.blend
+		Main.cpp
+	)
+endif()
 
 include_directories(
 	${OGREKIT_INCLUDE}
-	${OGREKIT_DEP_DIR}/tclap/include
 )
 
 link_libraries(
 	${OGREKIT_LIB}
 )
-
 
 set(HiddenCMakeLists ../CMakeLists.txt)
 source_group(ParentCMakeLists FILES ${HiddenCMakeLists})
@@ -40,11 +52,7 @@ if (WIN32)
 	list(APPEND SRC ${PLAT_RESOURCE})
 endif()
 
-
-
-
 if (APPLE)
-
 	add_executable(
 		AppOgreKit 
 		MACOSX_BUNDLE
@@ -52,17 +60,18 @@ if (APPLE)
 		${SRC} 
 		${HiddenCMakeLists}
 	)
-
 else ()
+	if (OGREKIT_BUILD_ANDROID)
+		add_library(Runtime SHARED ${SRC} ${HiddenCMakeLists})
+	else()
+		add_executable(AppOgreKit ${SRC} ${HiddenCMakeLists})
 
-	add_executable(AppOgreKit ${SRC} ${HiddenCMakeLists})
-	
-	IF (NOT INTERNAL_CREATE_DISTRIBUTABLE_MSVC_PROJECTFILES)
-		ADD_CUSTOM_COMMAND(
-			TARGET AppOgreKit 
-			POST_BUILD
-			COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/momo_ogre.blend ${CMAKE_CURRENT_BINARY_DIR}/momo_ogre.blend
-		)
-	ENDIF ()
-
+		IF (NOT INTERNAL_CREATE_DISTRIBUTABLE_MSVC_PROJECTFILES)
+			ADD_CUSTOM_COMMAND(
+				TARGET AppOgreKit 
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/momo_ogre.blend ${CMAKE_CURRENT_BINARY_DIR}/momo_ogre.blend
+			)
+		ENDIF ()
+	endif()
 endif()
