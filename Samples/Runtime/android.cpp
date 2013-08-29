@@ -34,7 +34,7 @@
 
 class OgreKit : public gkCoreApplication, public gkWindowSystem::Listener {
 public:
-    OgreKit() {}
+    OgreKit(ANativeActivity* activity);
     virtual ~OgreKit() {}
 
     void keyReleased(const gkKeyboard& key, const gkScanCode& sc);
@@ -43,6 +43,11 @@ private:
     gkString m_blend;
     gkScene* m_scene;
 };
+
+OgreKit::OgreKit(ANativeActivity* activity) {
+    ANativeActivity_setWindowFlags(activity,
+            AWINDOW_FLAG_FULLSCREEN | AWINDOW_FLAG_KEEP_SCREEN_ON, 0);
+}
 
 void OgreKit::keyReleased(const gkKeyboard& key, const gkScanCode& sc) {
     if (sc == KC_ESCKEY)
@@ -59,4 +64,7 @@ void android_main(struct android_app* state) {
 
     // Make sure glue isn't stripped.
     app_dummy();
+
+    OgreKit engine(state->activity);
+    engine.run();
 }
