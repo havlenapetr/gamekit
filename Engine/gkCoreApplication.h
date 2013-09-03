@@ -56,7 +56,7 @@ public:
 	gkUserDefs& getPrefs(void) {return m_prefs;}
 	// Internal startup
 	bool initialize(void);
-	void run(void);
+	virtual void run(void);
 };
 
 #endif//_gkCoreApplication_h_
