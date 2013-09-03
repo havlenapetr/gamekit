@@ -28,6 +28,7 @@ export OPTIONS=("$MAINFOLDER" -G "Unix Makefiles"
     -DCMAKE_TOOLCHAIN_FILE="$MAINFOLDER/CMake/Toolchains/android.toolchain.cmake"
     -DANDROID_ABI="$ABI"
     -DANDROID_NATIVE_API_LEVEL=$API_LEVEL
+	-DANDROID_NDK_HOST_X64=1
 )
 
 if [ "" = "$1" ]; 
