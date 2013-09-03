@@ -50,12 +50,14 @@ public:
     gkAndroidApp(android_app* state);
     virtual ~gkAndroidApp() {}
 
-    bool            init(const gkString& file);
-    virtual bool    setup(void);
     virtual void    run();
+
+protected:
+    virtual bool    setup(void);
     virtual void    keyReleased(const gkKeyboard& key, const gkScanCode& sc);
 
 private:
+    bool            init(const gkString& file);
     static int32_t  handleInput(struct android_app* app, AInputEvent* event);
     static void     handleCmd(struct android_app* app, int32_t cmd);
     int32_t         handleInput(AInputEvent* event);
@@ -78,7 +80,9 @@ void gkAndroidApp::handleCmd(struct android_app* app, int32_t cmd) {
     static_cast<gkAndroidApp *>(app->userData)->handleCmd(cmd);
 }
 
-gkAndroidApp::gkAndroidApp(android_app* state) : m_state(state){
+gkAndroidApp::gkAndroidApp(android_app* state)
+	: m_state(state),
+	  m_window(NULL) {
     state->userData = this;
     state->onAppCmd = handleCmd;
     state->onInputEvent = handleInput;
@@ -158,11 +162,10 @@ void gkAndroidApp::handleCmd(int32_t cmd) {
             LOG_FOOT
             // The window is being shown, get it ready.
             if (m_state->window) {
+				init("momo_ogre_i.blend");
+
                 AConfiguration* config = AConfiguration_new();
                 AConfiguration_fromAssetManager(config, m_state->activity->assetManager);
-
-                //getPrefs().extWinhandle = Ogre::StringConverter::toString((int)m_state->window);
-                //getPrefs().androidConfig = Ogre::StringConverter::toString((int)config);
 
                 m_window = gkWindowSystem::getSingleton().getMainWindow();
                 if (m_window) {
@@ -226,8 +229,8 @@ void gkAndroidApp::run() {
         // If not animating, we will block forever waiting for events.
         // If animating, we loop until all events are read, then continue
         // to draw the next frame of animation.
-        while ((ident=ALooper_pollAll(m_engine->isRunning() ? 0 : -1, NULL, &events,
-                (void**)&source)) >= 0) {
+        while ((ident=ALooper_pollAll((m_engine && m_engine->isRunning()) ? 0 : -1,
+				NULL, &events, (void**)&source)) >= 0) {
 
             // Process this event.
             if (source != NULL) {
@@ -252,8 +255,6 @@ void android_main(struct android_app* state) {
     // Make sure glue isn't stripped.
     app_dummy();
 
-    gkAndroidApp engine(state);
-    if(engine.init("momo_ogre_i.blend")) {
-        engine.run();
-    }
+    gkAndroidApp app(state);
+	app.run();
 }
