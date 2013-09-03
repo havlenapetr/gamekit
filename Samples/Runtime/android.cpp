@@ -23,35 +23,222 @@
 -------------------------------------------------------------------------------
 */
 
-#include <OgreKit.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
+#include <android/log.h>
 #include <android/window.h>
+#include <android/sensor.h>
 #include <android_native_app_glue.h>
 
-class OgreKit : public gkCoreApplication, public gkWindowSystem::Listener {
-public:
-    OgreKit(ANativeActivity* activity);
-    virtual ~OgreKit() {}
+#include <OgreKit.h>
+#include <Ogre.h>
 
-    void keyReleased(const gkKeyboard& key, const gkScanCode& sc);
+#include <EGL/egl.h>
+#include <Android/OgreAndroidEGLWindow.h>
+#include <Android/OgreAPKFileSystemArchive.h>
+#include <Android/OgreAPKZipArchive.h>
+
+#define LOG_TAG    "OgreKit"
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define LOG_FOOT   LOGI("%s %s %d", __FILE__, __FUNCTION__, __LINE__);
+
+class gkAndroidApp : public gkCoreApplication, public gkWindowSystem::Listener {
+public:
+    gkAndroidApp(android_app* state);
+    virtual ~gkAndroidApp() {}
+
+    bool            init(const gkString& file);
+    virtual bool    setup(void);
+    virtual void    run();
+    virtual void    keyReleased(const gkKeyboard& key, const gkScanCode& sc);
 
 private:
-    gkString m_blend;
-    gkScene* m_scene;
+    static int32_t  handleInput(struct android_app* app, AInputEvent* event);
+    static void     handleCmd(struct android_app* app, int32_t cmd);
+    int32_t         handleInput(AInputEvent* event);
+    void            handleCmd(int32_t cmd);
+
+    gkString        m_blend;
+    gkWindow*       m_window;
+    android_app*    m_state;
+    const ASensor*  m_accelerometerSensor;
+    ASensorEventQueue* m_sensorEventQueue;
 };
 
-OgreKit::OgreKit(ANativeActivity* activity) {
-    ANativeActivity_setWindowFlags(activity,
+/* static proxy callback */
+int32_t gkAndroidApp::handleInput(struct android_app* app, AInputEvent* event) {
+    return static_cast<gkAndroidApp *>(app->userData)->handleInput(event);
+}
+
+/* static proxy callback */
+void gkAndroidApp::handleCmd(struct android_app* app, int32_t cmd) {
+    static_cast<gkAndroidApp *>(app->userData)->handleCmd(cmd);
+}
+
+gkAndroidApp::gkAndroidApp(android_app* state) : m_state(state){
+    state->userData = this;
+    state->onAppCmd = handleCmd;
+    state->onInputEvent = handleInput;
+
+    // prepare to monitor accelerometer
+    ASensorManager *sensorManager = ASensorManager_getInstance();
+    m_accelerometerSensor = ASensorManager_getDefaultSensor(sensorManager,
+            ASENSOR_TYPE_ACCELEROMETER);
+    m_sensorEventQueue = ASensorManager_createEventQueue(sensorManager,
+            state->looper, LOOPER_ID_USER, NULL, NULL);
+
+    ANativeActivity_setWindowFlags(state->activity,
             AWINDOW_FLAG_FULLSCREEN | AWINDOW_FLAG_KEEP_SCREEN_ON, 0);
 }
 
-void OgreKit::keyReleased(const gkKeyboard& key, const gkScanCode& sc) {
+bool gkAndroidApp::init(const gkString& file) {
+    m_blend = file;
+    getPrefs().debugFps = true;
+    getPrefs().wintitle = gkString("OgreKit Demo [") + file + gkString("]");
+    getPrefs().blendermat=true;
+    getPrefs().enableshadows=false;
+    getPrefs().viewportOrientation="portrait";
+    return initialize();
+}
+
+bool gkAndroidApp::setup(void) {
+    LOG_FOOT;
+
+    AAssetManager* assetMgr = m_state->activity->assetManager;
+    if (assetMgr) {
+        Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetMgr));
+        Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKZipArchiveFactory(assetMgr));
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation("/", "APKFileSystem",
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    }
+
+    Ogre::DataStreamPtr stream = Ogre::ResourceGroupManager::getSingleton().
+            openResource(m_blend, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    if (stream.isNull()) {
+        gkPrintf("Error: Can't open file %s.\n", m_blend.c_str());
+        return false;
+    }
+
+    size_t size = stream->size();
+    char* buf = new char[size];
+    stream->read(buf, size);
+
+    gkBlendFile* blend = gkBlendLoader::getSingleton().loadFromMemory(buf,size,gkBlendLoader::LO_ALL_SCENES);
+    gkScene* scene = blend->getMainScene();
+    if (!scene) {
+        gkPrintf("No usable scenes found in blend.\n");
+        return false;
+    }
+
+    LOG_FOOT;
+
+    scene->createInstance();
+
+    LOG_FOOT;
+    
+    scene->getMainCamera()->getCamera()->setAutoAspectRatio(true);
+
+    return true;
+}
+
+int32_t gkAndroidApp::handleInput(AInputEvent* event) {
+    return 0;
+}
+
+void gkAndroidApp::handleCmd(int32_t cmd) {
+    switch (cmd) {
+        case APP_CMD_SAVE_STATE:
+            LOG_FOOT
+            break;
+
+        case APP_CMD_INIT_WINDOW:
+            LOG_FOOT
+            // The window is being shown, get it ready.
+            if (m_state->window) {
+                AConfiguration* config = AConfiguration_new();
+                AConfiguration_fromAssetManager(config, m_state->activity->assetManager);
+
+                //getPrefs().extWinhandle = Ogre::StringConverter::toString((int)m_state->window);
+                //getPrefs().androidConfig = Ogre::StringConverter::toString((int)config);
+
+                m_window = gkWindowSystem::getSingleton().getMainWindow();
+                if (m_window) {
+                    static_cast<Ogre::AndroidEGLWindow*>(m_window->getOgreRenderWindow())->
+                            _createInternalResources(m_state->window, config);
+                }
+
+                AConfiguration_delete(config);
+            }
+            break;
+
+        case APP_CMD_TERM_WINDOW: {
+            LOG_FOOT
+            if (m_window) {
+                static_cast<Ogre::AndroidEGLWindow*>(m_window->getOgreRenderWindow())->
+                        _destroyInternalResources();
+            }
+            break;
+        }
+
+        case APP_CMD_GAINED_FOCUS:
+            LOG_FOOT
+            // When our app gains focus, we start monitoring the accelerometer.
+            if (m_accelerometerSensor) {
+                ASensorEventQueue_enableSensor(m_sensorEventQueue,
+                        m_accelerometerSensor);
+                // We'd like to get 60 events per second (in us).
+                ASensorEventQueue_setEventRate(m_sensorEventQueue,
+                        m_accelerometerSensor, (1000L/60)*1000);
+            }
+            break;
+
+        case APP_CMD_LOST_FOCUS:
+            LOG_FOOT
+            // When our app loses focus, we stop monitoring the accelerometer.
+            // This is to avoid consuming battery while not being used.
+            if (m_accelerometerSensor) {
+                ASensorEventQueue_disableSensor(m_sensorEventQueue,
+                        m_accelerometerSensor);
+            }
+            break;
+
+        case APP_CMD_CONFIG_CHANGED:
+            LOG_FOOT
+            break;
+    }
+}
+
+void gkAndroidApp::keyReleased(const gkKeyboard& key, const gkScanCode& sc) {
     if (sc == KC_ESCKEY)
         m_engine->requestExit();
+}
+
+void gkAndroidApp::run() {
+    int ident;
+    int events;
+
+    while (true/*!m_engine.isExiting()*/) {
+        struct android_poll_source* source;
+
+        // If not animating, we will block forever waiting for events.
+        // If animating, we loop until all events are read, then continue
+        // to draw the next frame of animation.
+        while ((ident=ALooper_pollAll(m_engine->isRunning() ? 0 : -1, NULL, &events,
+                (void**)&source)) >= 0) {
+
+            // Process this event.
+            if (source != NULL) {
+                source->process(m_state, source);
+            }
+        }
+
+        if(m_window && m_window->isActive()) {
+            m_engine->stepOneFrame();
+        }
+    }
 }
 
 /**
@@ -65,6 +252,8 @@ void android_main(struct android_app* state) {
     // Make sure glue isn't stripped.
     app_dummy();
 
-    OgreKit engine(state->activity);
-    engine.run();
+    gkAndroidApp engine(state);
+    if(engine.init("momo_ogre_i.blend")) {
+        engine.run();
+    }
 }
