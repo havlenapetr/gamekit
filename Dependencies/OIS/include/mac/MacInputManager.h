@@ -87,6 +87,7 @@ namespace OIS
         // settings
         bool mHideMouse;
         bool mUseRepeat;
+        bool mGrabMouse;
 
 		//! Used to know if we used up keyboard
 		bool keyboardUsed;

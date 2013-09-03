@@ -24,8 +24,8 @@ const EventTypeSpec mouseEvents[] = {
 const EventTypeSpec WinFocusAcquired [] = {{kEventClassApplication, kEventAppDeactivated}};
 
 //-------------------------------------------------------------------//
-MacMouse::MacMouse( InputManager* creator, bool buffered )
-	: Mouse(creator->inputSystemName(), buffered, 0, creator), mNeedsToRegainFocus( false )
+MacMouse::MacMouse( InputManager* creator, bool buffered, bool grab )
+    : Mouse(creator->inputSystemName(), buffered, 0, creator), mNeedsToRegainFocus( false ), mMouseGrabbed( grab )
 {
     mouseEventRef = NULL;
 	mWindowFocusHandler = NULL;
@@ -59,10 +59,13 @@ void MacMouse::_initialize()
 {
 	mState.clear();
 	mTempState.clear();
-	mMouseWarped = false;
+    mMouseWarped = false;
 	
-	// Hide OS Mouse
-    CGDisplayHideCursor(kCGDirectMainDisplay);
+    // Hide OS Mouse
+    if(mMouseGrabbed)
+    {
+        CGDisplayHideCursor(kCGDirectMainDisplay);
+    }
 
 	MacInputManager* im = static_cast<MacInputManager*>(mCreator);
 	WindowRef win = im->_getWindow();
@@ -99,7 +102,10 @@ void MacMouse::_initialize()
 
 	//Lock OS Mouse movement
 	mNeedsToRegainFocus = false;
-    CGAssociateMouseAndMouseCursorPosition(FALSE);
+    if(mMouseGrabbed)
+    {
+        CGAssociateMouseAndMouseCursorPosition(FALSE);
+    }
 }
 
 OSStatus MacMouse::WindowFocusChanged(EventHandlerCallRef nextHandler, EventRef event, void* macMouse)
@@ -109,8 +115,11 @@ OSStatus MacMouse::WindowFocusChanged(EventHandlerCallRef nextHandler, EventRef 
 	MacMouse* _this = static_cast<MacMouse*>(macMouse);
     if (_this)
 	{
-		_this->mNeedsToRegainFocus = true;
-		CGAssociateMouseAndMouseCursorPosition(TRUE);
+        if(_this->mMouseGrabbed)
+        {
+            _this->mNeedsToRegainFocus = true;
+            CGAssociateMouseAndMouseCursorPosition(TRUE);
+        }
 
         // propagate the event down the chain
         return CallNextEventHandler(nextHandler, event);

@@ -154,6 +154,7 @@ bool gkWindow::setupInput(const gkUserDefs& prefs)
 
 #elif GK_PLATFORM == GK_PLATFORM_APPLE
             params.insert(std::make_pair(std::string("MacAutoRepeatOn"),	std::string("true")));
+            params.insert(std::make_pair(std::string("MacMouseGrab"),       std::string("false")));
 #else
 			params.insert(std::make_pair(std::string("x11_mouse_grab"),		std::string("false")));
 			params.insert(std::make_pair(std::string("x11_mouse_hide"),		std::string("false")));

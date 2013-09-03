@@ -36,7 +36,7 @@ using namespace OIS;
 //--------------------------------------------------------------------------------//
 MacInputManager::MacInputManager() : InputManager("Mac OSX Input Manager")
 {
-    mHideMouse = true;
+    mGrabMouse = mHideMouse = true;
     mUseRepeat = false;
     mEventTargetRef = NULL;
 	mWindow = NULL;
@@ -114,6 +114,15 @@ void MacInputManager::_parseConfigSettings( ParamList &paramList )
             mUseRepeat = true;
         }
     }
+
+    // Mouse
+    if(paramList.find("MacMouseGrab") != paramList.end())
+    {
+        if(paramList.find("MacMouseGrab")->second == "false")
+        {
+            mGrabMouse = false;
+        }
+    }
 }
 
 //--------------------------------------------------------------------------------//
@@ -183,7 +192,7 @@ Object* MacInputManager::createObject(InputManager* creator, Type iType, bool bu
 	case OISMouse:
 	{
 		if( mouseUsed == false )
-			obj = new MacMouse(this, bufferMode);
+            obj = new MacMouse(this, bufferMode, mGrabMouse);
 		break;
 	}
 	default:
