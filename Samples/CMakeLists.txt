@@ -54,8 +54,3 @@ endif()
 if (SAMPLES_LUA_EDITOR)
     subdirs(LuaEditor)
 endif()
-
-
-if (SAMPLES_OGREDEMO)	
-	subdirs(OgreDemo)
-endif()
