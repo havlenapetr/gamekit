@@ -57,7 +57,7 @@ protected:
     virtual void    keyReleased(const gkKeyboard& key, const gkScanCode& sc);
 
 private:
-    bool            init(const gkString& file);
+    bool            init(AConfiguration* config, const gkString& file);
     static int32_t  handleInput(struct android_app* app, AInputEvent* event);
     static void     handleCmd(struct android_app* app, int32_t cmd);
     int32_t         handleInput(AInputEvent* event);
@@ -81,8 +81,8 @@ void gkAndroidApp::handleCmd(struct android_app* app, int32_t cmd) {
 }
 
 gkAndroidApp::gkAndroidApp(android_app* state)
-	: m_state(state),
-	  m_window(NULL) {
+    : m_state(state),
+      m_window(NULL) {
     state->userData = this;
     state->onAppCmd = handleCmd;
     state->onInputEvent = handleInput;
@@ -98,19 +98,21 @@ gkAndroidApp::gkAndroidApp(android_app* state)
             AWINDOW_FLAG_FULLSCREEN | AWINDOW_FLAG_KEEP_SCREEN_ON, 0);
 }
 
-bool gkAndroidApp::init(const gkString& file) {
+bool gkAndroidApp::init(AConfiguration* config, const gkString& file) {
     m_blend = file;
+
     getPrefs().debugFps = true;
     getPrefs().wintitle = gkString("OgreKit Demo [") + file + gkString("]");
     getPrefs().blendermat=true;
     getPrefs().enableshadows=false;
     getPrefs().viewportOrientation="portrait";
-    return initialize();
+    getPrefs().extWinhandle  = Ogre::StringConverter::toString((int)m_state->window);
+    getPrefs().androidConfig = Ogre::StringConverter::toString((int)config);
+
+    return initialize() && m_engine->initializeStepLoop();
 }
 
 bool gkAndroidApp::setup(void) {
-    LOG_FOOT;
-
     AAssetManager* assetMgr = m_state->activity->assetManager;
     if (assetMgr) {
         Ogre::ArchiveManager::getSingleton().addArchiveFactory(new Ogre::APKFileSystemArchiveFactory(assetMgr));
@@ -137,12 +139,7 @@ bool gkAndroidApp::setup(void) {
         return false;
     }
 
-    LOG_FOOT;
-
     scene->createInstance();
-
-    LOG_FOOT;
-    
     scene->getMainCamera()->getCamera()->setAutoAspectRatio(true);
 
     return true;
@@ -162,16 +159,12 @@ void gkAndroidApp::handleCmd(int32_t cmd) {
             LOG_FOOT
             // The window is being shown, get it ready.
             if (m_state->window) {
-				init("momo_ogre_i.blend");
-
                 AConfiguration* config = AConfiguration_new();
                 AConfiguration_fromAssetManager(config, m_state->activity->assetManager);
 
+                init(config, "momo_ogre_i.blend");
+
                 m_window = gkWindowSystem::getSingleton().getMainWindow();
-                if (m_window) {
-                    static_cast<Ogre::AndroidEGLWindow*>(m_window->getOgreRenderWindow())->
-                            _createInternalResources(m_state->window, config);
-                }
 
                 AConfiguration_delete(config);
             }
@@ -179,10 +172,6 @@ void gkAndroidApp::handleCmd(int32_t cmd) {
 
         case APP_CMD_TERM_WINDOW: {
             LOG_FOOT
-            if (m_window) {
-                static_cast<Ogre::AndroidEGLWindow*>(m_window->getOgreRenderWindow())->
-                        _destroyInternalResources();
-            }
             break;
         }
 
@@ -230,7 +219,7 @@ void gkAndroidApp::run() {
         // If animating, we loop until all events are read, then continue
         // to draw the next frame of animation.
         while ((ident=ALooper_pollAll((m_engine && m_engine->isRunning()) ? 0 : -1,
-				NULL, &events, (void**)&source)) >= 0) {
+                NULL, &events, (void**)&source)) >= 0) {
 
             // Process this event.
             if (source != NULL) {
@@ -256,5 +245,5 @@ void android_main(struct android_app* state) {
     app_dummy();
 
     gkAndroidApp app(state);
-	app.run();
+    app.run();
 }
