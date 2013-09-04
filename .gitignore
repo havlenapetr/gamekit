@@ -1,2 +1,3 @@
-.svn
-.patch
+*.svn
+*.patch
+*.orig

@@ -2,6 +2,7 @@ macro (configure_ogrekit ROOT OGREPATH)
 	#message(STATUS ${OGREPATH})
 	set(GNUSTEP_SYSTEM_ROOT $ENV{GNUSTEP_SYSTEM_ROOT})
 	
+	
 	if(APPLE OR GNUSTEP_SYSTEM_ROOT)
 		if (WIN32 AND NOT CMAKE_COMPILER_IS_GNUCXX)
 			set(OGREKIT_USE_COCOA FALSE CACHE BOOL "Forcing remove Use Cocoa" FORCE)
@@ -118,11 +119,16 @@ macro (configure_ogrekit ROOT OGREPATH)
 	set(OGREKIT_TINYXML_TARGET TinyXml)
 	
 	set(OGREKIT_DEP_DIR ${ROOT}/Dependencies)
+	
 	set(OGRE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/Bin)
+	SET(OGRE_SOURCE_DIR ${OGREPATH})
+	SET(OGRE_WORK_DIR ${OGRE_BINARY_DIR})
 	set(OGRE_TEMPLATES_DIR ${ROOT}/CMake/Templates)
+	
 	set(OGRELITE_SOURCE_DIR ${OGREPATH})
 	set(OGREKIT_SAMPLES_DIR ${ROOT}/Samples)
 	set(OGREKIT_ANDROID_DEP_DIR ${ROOT}/Dependencies/Android)
+	SET(OGREKIT_MEDIA_DIR ${OGREKIT_SAMPLES_DIR}/OgreDemo/Media)
 	
 	include(OgreConfigTargets)
 	include(DependenciesOgreKit)
@@ -189,7 +195,11 @@ macro (configure_ogrekit ROOT OGREPATH)
 	option(SAMPLES_LUA_EDITOR     "Build Samples/LuaEditor"     OFF)
 	option(SAMPLES_LUARUNTIME     "Build Samples/LuaRuntime"    OFF)
     option(SAMPLES_ANDROIDTEST    "Build Samples/Android/Test"  OFF)
-
+	option(SAMPLES_OGREDEMO		  "Build Samples/SampleBrowser" OFF)
+	
+	IF (SAMPLES_OGREDEMO)
+		set(OGREKIT_DISABLE_ZIP FALSE CACHE BOOL "Use external .zip resource loading" FORCE)	
+	ENDIF()
 
 	if (NOT SAMPLES_CPPDEMO)
 		set(SAMPLES_CPPDEMO_COMPILE_BLEND FALSE CACHE BOOL "IF CPPDEMO not activated, deactivate cppdemo-compile blend as well" FORCE)	
@@ -724,6 +734,6 @@ macro(configure_rendersystem)
 		)
 
 	endif()
-	
+		
 endmacro(configure_rendersystem)
 
