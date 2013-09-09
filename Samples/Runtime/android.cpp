@@ -160,11 +160,17 @@ void gkAndroidApp::handleCmd(int32_t cmd) {
             // The window is being shown, get it ready.
             if (m_state->window) {
                 AConfiguration* config = AConfiguration_new();
-                AConfiguration_fromAssetManager(config, m_state->activity->assetManager);
 
-                init(config, "momo_ogre_i.blend");
+                if(!m_window) {
+                    AConfiguration_fromAssetManager(config, m_state->activity->assetManager);
 
-                m_window = gkWindowSystem::getSingleton().getMainWindow();
+                    init(config, "momo_ogre_i.blend");
+
+                    m_window = gkWindowSystem::getSingleton().getMainWindow();
+                } else {
+                    static_cast<Ogre::AndroidEGLWindow*>(m_window->getRenderWindow())->
+                            _createInternalResources(m_state->window, config);
+                }
 
                 AConfiguration_delete(config);
             }
@@ -172,6 +178,10 @@ void gkAndroidApp::handleCmd(int32_t cmd) {
 
         case APP_CMD_TERM_WINDOW: {
             LOG_FOOT
+            if(m_window) {
+                static_cast<Ogre::AndroidEGLWindow*>(m_window->getRenderWindow())->
+                        _destroyInternalResources();
+            }
             break;
         }
 
@@ -212,7 +222,7 @@ void gkAndroidApp::run() {
     int ident;
     int events;
 
-    while (true/*!m_engine.isExiting()*/) {
+    while (!m_state->destroyRequested) {
         struct android_poll_source* source;
 
         // If not animating, we will block forever waiting for events.
