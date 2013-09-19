@@ -1,4 +1,10 @@
-function(config_target_if_iphone_build targetname is_library)   
+
+function(config_ogrekit_target1 targetname is_library)   
+	#MESSAGE(STATUS "target:" ${targetname})
+	if (is_library)
+		 ogre_config_common(${targetname})
+	endif()
+
 	if (OGREKIT_BUILD_IPHONE)
 		include_directories("include/iOS")
 		set_target_properties(${targetname} PROPERTIES XCODE_ATTRIBUTE_GCC_UNROLL_LOOPS "YES")
@@ -10,6 +16,11 @@ function(config_target_if_iphone_build targetname is_library)
 		else()
 			set_target_properties(${targetname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin$(EFFECTIVE_PLATFORM_NAME)")
 			set_target_properties(${targetname} PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
-		endif()
+		endif()	
 	endif()
+endfunction()
+
+
+function(config_ogrekit_target targetname is_library)   
+	config_ogrekit_target1(${targetname} ${is_library})
 endfunction()
