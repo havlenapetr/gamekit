@@ -2,10 +2,7 @@
 
 # skip pre-1.9mercurial-Android-stuff
 if (NOT GAMEKIT_GRAPHIC_BACKEND EQUAL GAMEKIT_GRAPHIC_BACKEND_19_mercurial)
-    if (OGREKIT_BUILD_ANDROID)
-	    subdirs(AndroidDemo)
-		return()
-    elseif (OGREKIT_BUILD_IPHONE)
+    if (OGREKIT_BUILD_IPHONE)
 	    subdirs(IPhoneDemo)
 		return()
     elseif (SAMPLES_ANDROIDTEST)
@@ -15,7 +12,7 @@ endif()
 
 
 if (SAMPLES_RUNTIME)
-    subdirs(Runtime)    
+    subdirs(Runtime)
 endif()
 
 if (SAMPLES_LOGICDEMO)
