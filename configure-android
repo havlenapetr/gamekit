@@ -16,6 +16,28 @@ API_LEVEL=9  # Default is 8
 
 # See CMake/Toolchains/android.toolchain.cmake for a full list of options.
 
+if [ "" = "$1" ];
+then
+	echo "Use: $0 <build target directory> [ debug ]"
+	exit 1
+fi
+
+if [ "" = "${ANDROID_NDK}" ]; 
+then
+	echo "ANDROID_NDK Path is empty."
+	exit 1
+fi
+
+if [ "" = "${ANDROID_SDK}" ]; 
+then
+	echo "ANDROID_SDK Path is empty."
+	exit 1
+fi
+
+if [ ! -d $1 ]; 
+then
+	mkdir "$1"
+fi
 
 export OPTIONS=("$MAINFOLDER" -G "Unix Makefiles"
     -DOGRE_BUILD_PLATFORM_ANDROID=1
@@ -28,31 +50,10 @@ export OPTIONS=("$MAINFOLDER" -G "Unix Makefiles"
     -DCMAKE_TOOLCHAIN_FILE="$MAINFOLDER/CMake/Toolchains/android.toolchain.cmake"
     -DANDROID_ABI="$ABI"
     -DANDROID_NATIVE_API_LEVEL=$API_LEVEL
-	-DANDROID_NDK_HOST_X64=1
+    -DANDROID_NDK_HOST_X64=1
+    -DANDROID_NDK=${ANDROID_NDK}
+    -DANDROID_SDK=${ANDROID_SDK}
 )
-
-if [ "" = "$1" ]; 
-then
-	echo "Use: $0 <build target directory> [ debug ]"
-	exit 1
-fi
-
-if [ "" = "${ANDROID_NDK}" ]; 
-then
-	echo "ANDROID_NDK Path is empty."
-	exit 1
-fi
-
-#if [ "" = "${ANDROID_SDK}" ]; 
-#then
-#	echo "ANDROID_SDK Path is empty."
-#	exit 1
-#fi
-
-if [ ! -d $1 ]; 
-then
-	mkdir "$1"
-fi
 
 #
 cd "$1" #>/dev/null 2>&1 && 

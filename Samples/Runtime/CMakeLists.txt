@@ -74,6 +74,12 @@ else ()
 				${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
 				${CMAKE_CURRENT_SOURCE_DIR}/Android/libs/${ANDROID_ABI}/${OUTPUT_NAME}
 		)
+		add_custom_command(TARGET ${PROJECT_NAME}
+			POST_BUILD
+			COMMAND ant
+			ARGS -DANDROID_SDK=${ANDROID_SDK} debug
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Android
+		)
 	else()
 		add_executable(${PROJECT_NAME} ${SRC} ${HiddenCMakeLists})
 
