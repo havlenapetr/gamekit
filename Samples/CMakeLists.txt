@@ -1,16 +1,5 @@
 # Adding options only to speed up build/dev time
 
-# skip pre-1.9mercurial-Android-stuff
-if (NOT GAMEKIT_GRAPHIC_BACKEND EQUAL GAMEKIT_GRAPHIC_BACKEND_19_mercurial)
-    if (OGREKIT_BUILD_IPHONE)
-	    subdirs(IPhoneDemo)
-		return()
-    elseif (SAMPLES_ANDROIDTEST)
-		subdirs(AndroidDemo/Test)
-    endif()
-endif()
-
-
 if (SAMPLES_RUNTIME)
     subdirs(Runtime)
 endif()
