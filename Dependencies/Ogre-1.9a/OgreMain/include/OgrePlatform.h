@@ -300,7 +300,7 @@ namespace Ogre {
 
 //----------------------------------------------------------------------------
 // Set the default locale for strings
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+#if 1/*OGRE_PLATFORM == OGRE_PLATFORM_ANDROID*/
 //	Locales are not supported by the C lib you have to go through JNI.
 #	define OGRE_DEFAULT_LOCALE ""
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS

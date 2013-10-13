@@ -125,9 +125,10 @@ void ProgressiveMeshGenerator::tuneContainerSize()
 			vertexCount += sharedVertexLookupSize;
 		}
 	}
-
+#ifndef __APPLE__
 	// Tune containers:
 	mUniqueVertexSet.rehash(4 * vertexCount); // less then 0.25 item/bucket for low collision rate
+#endif
 
 	// There are less triangles then 2 * vertexCount. Except if there are bunch of triangles,
 	// where all vertices have the same position, but that would not make much sense.

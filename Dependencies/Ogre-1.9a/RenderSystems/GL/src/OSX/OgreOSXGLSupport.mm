@@ -116,7 +116,9 @@ void OSXGLSupport::addConfig( void )
     optContentScalingFactor.possibleValues.push_back( "1.33" );
     optContentScalingFactor.possibleValues.push_back( "1.5" );
     optContentScalingFactor.possibleValues.push_back( "2.0" );
+#if 0
     optContentScalingFactor.currentValue = StringConverter::toString((float)[NSScreen mainScreen].backingScaleFactor);
+#endif
     optContentScalingFactor.immutable = false;
 
 #ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS

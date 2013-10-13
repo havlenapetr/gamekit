@@ -36,6 +36,7 @@ THE SOFTWARE.
 #import "OgreGLRenderSystem.h"
 #import <AppKit/NSScreen.h>
 #import <AppKit/NSOpenGLView.h>
+#import <AppKit/NSApplication.h>
 #import <QuartzCore/CVDisplayLink.h>
 
 @implementation OgreWindow
@@ -319,9 +320,11 @@ namespace Ogre {
     unsigned int OSXCocoaWindow::getWidth() const
     {
         NSRect winFrame;
+#if 0
         if(mContentScalingFactor > 1.0)
             winFrame = [mWindow convertRectToBacking:[mWindow contentRectForFrameRect:[mView frame]]];
         else
+#endif
             winFrame = [mView frame];
         return (unsigned int) winFrame.size.width;
     }
@@ -329,9 +332,11 @@ namespace Ogre {
     unsigned int OSXCocoaWindow::getHeight() const
     {
         NSRect winFrame;
+#if 0
         if(mContentScalingFactor > 1.0)
             winFrame = [mWindow convertRectToBacking:[mWindow contentRectForFrameRect:[mView frame]]];
         else
+#endif
             winFrame = [mView frame];
         return (unsigned int) winFrame.size.height;
     }
@@ -656,8 +661,11 @@ namespace Ogre {
     void OSXCocoaWindow::createWindowFromExternal(NSView *viewRef)
     {
         LogManager::getSingleton().logMessage("Creating external window");
-
+#if 0
         NSRect viewBounds = [mView convertRectToBacking:[mView bounds]];
+#else
+		NSRect viewBounds = [mView bounds];
+#endif
 
         mWindow = [viewRef window];
 
@@ -684,9 +692,11 @@ namespace Ogre {
                 // This ensures that it will scale to the full screen size
                 NSRect mainDisplayRect = [[NSScreen mainScreen] frame];
                 NSRect backingRect = NSZeroRect;
+#if 0
                 if(mContentScalingFactor > 1.0)
                     backingRect = [[NSScreen mainScreen] convertRectToBacking:mainDisplayRect];
                 else
+#endif
                     backingRect = mainDisplayRect;
 
                 GLint backingStoreDimensions[2] = { static_cast<GLint>(backingRect.size.width), static_cast<GLint>(backingRect.size.height) };
